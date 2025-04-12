@@ -43,8 +43,10 @@ COPY --chown=node:node . ./
 RUN ls -l
 
 RUN mkdir -p ./eveData
-RUN curl -o ./eveData/mapSolarSystems.csv https://www.fuzzwork.co.uk/dump/latest/mapSolarSystems.csv
-RUN curl -o ./eveData/mapSolarSystemJumps.csv https://www.fuzzwork.co.uk/dump/latest/mapSolarSystemJumps.csv
+RUN curl https://www.fuzzwork.co.uk/dump/latest/mapSolarSystems.csv | \
+    awk -F, '$3 != "30100000" || NR==1' > ./eveData/mapSolarSystems.csv
+RUN curl https://www.fuzzwork.co.uk/dump/latest/mapSolarSystemJumps.csv | \
+    awk -F, '($3 != "30100000" && $4 != "30100000") || NR==1' > ./eveData/mapSolarSystemJumps.csv
 RUN npm run generateGraph
 RUN npm run build
 RUN npm prune --production
